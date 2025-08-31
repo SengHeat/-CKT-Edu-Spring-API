@@ -1,0 +1,127 @@
+
+Table users {
+  id integer [pk, increment]
+  email varchar [unique]
+  password_hash varchar
+  first_name varchar
+  last_name varchar
+  phone varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table roles {
+  id integer [pk, increment]
+  name varchar
+  description text
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table permissions {
+  id integer [pk, increment]
+  name varchar
+  description text
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table role_permissions {
+  id integer [pk, increment]
+  role_id integer [ref: > roles.id]
+  permission_id integer [ref: > permissions.id]
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table roles_users {
+  id integer [pk, increment]
+  
+  role_id integer [ref: > roles.id]
+  user_id integer [ref: > users.id]
+
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+// use to draw menu
+Table data_structures {
+  id integer [pk, increment]
+  name varchar
+  description text
+  parent_id integer [ref: > data_structures.id]
+  description text
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table contents {
+  id integer [pk, increment]
+  data_structure_id integer [ref: > data_structures.id]
+  title varchar
+  description text
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table components {
+  id integer [pk, increment]
+  content_id integer [ref: > contents.id]
+  position integer
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+
+Table component_texts {
+  id integer [pk, increment]
+  main_component_id integer [ref: > components.id]
+  data_type enum // e.g., 'markdown', 'html', 'plaintext', 'latex'
+  data text
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table component_medias {
+  id integer [pk, increment]
+  main_component_id integer [ref: > components.id]
+  data_type enum // MIME types: 'video', 'image/jpeg' ... + 'youtube', 'vimeo'
+  file_name varchar
+  file_path varchar
+  private_url varchar
+  public_url varchar
+  metadata json
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
+
+Table component_collapses {
+  id integer [pk, increment]
+  main_component_id integer [ref: > components.id]
+  display_content integer [ref: > contents.id]
+  collapse_content integer [ref: > contents.id]
+  created_at timestamp
+  updated_at timestamp
+  created_by integer
+  updated_by integer
+}
