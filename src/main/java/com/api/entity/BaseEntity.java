@@ -1,11 +1,18 @@
 package com.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
+@Setter
+@Getter
 @MappedSuperclass
 public abstract class BaseEntity {
+
+    // --- getters & setters ---
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,13 +20,25 @@ public abstract class BaseEntity {
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();
 
-    @PreUpdate
-    public void onUpdate() { this.updatedAt = Instant.now(); }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", updatable = false)
+    @JsonIgnore
+    private User createdBy;
 
-    public Long getId() { return id; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
-    public void setId(Long id) { this.id = id; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by")
+    @JsonIgnore
+    private User updatedBy;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = Instant.now();
+    }
+
 }

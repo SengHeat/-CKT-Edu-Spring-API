@@ -23,6 +23,6 @@ public class RBACService {
     public boolean userHasPermission(User u, String permSlug) {
         return u.getRoles().stream()
                 .flatMap(r -> r.getPermissions().stream())
-                .anyMatch(p -> p.getGroup().equals(permSlug));
+                .anyMatch(p -> p.getName().equals(permSlug));
     }
 }

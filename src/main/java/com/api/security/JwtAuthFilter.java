@@ -5,6 +5,8 @@ import com.api.entity.User;
 import com.api.exception.UnauthorizedException;
 import com.api.repository.PATRepository;
 import com.api.repository.UserRepository;
+import com.api.util.SystemPermission;
+import com.api.util.SystemRole;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -69,25 +72,39 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     try {
                         id = Long.parseLong(parts[0]);
                     } catch (NumberFormatException e) {
-                        return;
+                        return; // invalid token id
                     }
 
                     String plainToken = parts[1];
                     String hash = sha256(plainToken);
 
-                    // Save the filtered Optional
+                    // Lookup the token in the DB
                     Optional<PersonalAccessToken> patOpt = personalAccessTokenRepository.findById(id)
                             .filter(t -> t.getTokenHash().equals(hash))
                             .filter(t -> t.getExpiresAt() == null || t.getExpiresAt().isAfter(Instant.now()));
 
                     patOpt.ifPresent(pat -> {
-                        // Get the user associated with this token
                         User u = pat.getUser();
 
                         // Build authorities for Spring Security
-                        Set<SimpleGrantedAuthority> authorities = u.getAllAuthorities().stream()
-                                .map(SimpleGrantedAuthority::new)
-                                .collect(Collectors.toSet());
+                        Set<SimpleGrantedAuthority> authorities;
+
+                        // If MASTER role, grant all permissions
+                        boolean isMaster = u.getRoles().stream()
+                                .anyMatch(r -> r.getName().equals(SystemRole.MASTER.name()));
+
+
+                        if (isMaster) {
+                            authorities = Arrays.stream(SystemPermission.values())
+                                    .map(sp -> new SimpleGrantedAuthority(sp.name()))
+                                    .collect(Collectors.toSet());
+                            System.out.println("MASTER Authorities: " + authorities);
+                        } else {
+                            authorities = u.getAllAuthorities().stream()
+                                    .map(SimpleGrantedAuthority::new)
+                                    .collect(Collectors.toSet());
+                            System.out.println("Authorities: " + authorities);
+                        }
 
                         // Create authentication token
                         UsernamePasswordAuthenticationToken auth =
@@ -96,10 +113,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         // Set the authentication in the SecurityContext
                         SecurityContextHolder.getContext().setAuthentication(auth);
 
-                        patOpt.get().setLastUsed(Instant.now());
-                        personalAccessTokenRepository.save(patOpt.get());
+                        // Update lastUsed timestamp
+                        pat.setLastUsed(Instant.now());
+                        personalAccessTokenRepository.save(pat);
                     });
-
                 }
             } catch (Exception e) {
                 // fallback: no auth

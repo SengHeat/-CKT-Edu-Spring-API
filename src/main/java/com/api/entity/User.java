@@ -104,8 +104,8 @@ public class User extends BaseEntity {
     public Set<String> getAllAuthorities() {
         Set<String> out = new HashSet<>();
         for (Role r : roles) {
-            out.add(r.getGroup()); // no ROLE_ prefix
-            out.addAll(r.getPermissions().stream().map(p -> "PERM_" + p.getGroup()).collect(Collectors.toSet()));
+            out.add(r.getGroup());
+            out.addAll(r.getPermissions().stream().map(Permission::getName).collect(Collectors.toSet()));
         }
         return out;
     }

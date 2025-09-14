@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 public class Role extends BaseEntity {
-    @Column(name = "\"group\"",unique = true, nullable = false, length = 100)
+    @Column(name = "\"group\"",unique = false, nullable = false, length = 100)
     private String group;
     private String name;
 

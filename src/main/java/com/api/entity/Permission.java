@@ -7,7 +7,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "permissions")
 public class Permission extends BaseEntity {
-    @Column(name = "\"group\"",unique = true, nullable = false, length = 150)
+    @Column(name = "\"group\"",unique = false, nullable = false, length = 150)
     private String group;
     private String name;
 
