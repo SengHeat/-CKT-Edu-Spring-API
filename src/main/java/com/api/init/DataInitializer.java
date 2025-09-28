@@ -1,16 +1,16 @@
 package com.api.init;
 
-import com.api.entity.DataStructure;
-import com.api.entity.Role;
-import com.api.entity.User;
-import com.api.entity.Permission;
+import com.api.content_management.model.entity.DataStructure;
+import com.api.user.model.entity.Role;
+import com.api.user.model.entity.User;
+import com.api.user.model.entity.Permission;
 import com.api.enums.DataStructureType;
-import com.api.repository.DataStructureRepository;
-import com.api.repository.RoleRepository;
-import com.api.repository.UserRepository;
-import com.api.repository.PermissionRepository;
-import com.api.util.SystemPermission;
-import com.api.util.SystemRole;
+import com.api.content_management.repository.DataStructureRepository;
+import com.api.user.repository.RoleRepository;
+import com.api.user.repository.UserRepository;
+import com.api.user.repository.PermissionRepository;
+import com.api.enums.SystemPermission;
+import com.api.enums.SystemRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -80,8 +80,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                                 role.setName(SystemRole.MASTER.toString());
                                 role.setGroup("MASTER");
                                 role.setCreatedBy(user);
-                                role.setCreatedAt(Instant.now());
-                                role.setUpdatedAt(Instant.now());
                                 return roleRepository.save(role);
                             });
 
@@ -114,8 +112,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                         user.setEmail(email);
                         user.setPasswordHash(passwordEncoder.encode("password123")); // default password
                         user.setStatus("active");
-                        user.setCreatedAt(Instant.now());
-                        user.setUpdatedAt(Instant.now());
 
                         // Assign role
                         Role role = roleRepository.findByName(roleName)
@@ -148,8 +144,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                             Role role = new Role();
                             role.setName(roleName);
                             role.setGroup(groupName);
-                            role.setCreatedAt(Instant.now());
-                            role.setUpdatedAt(Instant.now());
                             role.setCreatedBy(masterUser);
                             return roleRepository.save(role);
                         });
@@ -176,8 +170,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                             Permission p = new Permission();
                             p.setName(permissionName);
                             p.setGroup(groupName);
-                            p.setCreatedAt(Instant.now());
-                            p.setUpdatedAt(Instant.now());
                             p.setCreatedBy(masterUser);
                             return permissionRepository.save(p);
                         });
@@ -352,8 +344,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                         g.setName(gradeName);
                         g.setType(DataStructureType.GRADE.name());
                         g.setCreatedBy(masterUser);
-                        g.setCreatedAt(Instant.now());
-                        g.setUpdatedAt(Instant.now());
                         return dataStructureRepository.save(g);
                     });
 
@@ -365,8 +355,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                             s.setType(DataStructureType.SUBJECT.name());
                             s.setParent(grade);
                             s.setCreatedBy(masterUser);
-                            s.setCreatedAt(Instant.now());
-                            s.setUpdatedAt(Instant.now());
                             return dataStructureRepository.save(s);
                         });
 
@@ -378,8 +366,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                                 c.setType(DataStructureType.CHAPTER.name());
                                 c.setParent(subject);
                                 c.setCreatedBy(masterUser);
-                                c.setCreatedAt(Instant.now());
-                                c.setUpdatedAt(Instant.now());
                                 return dataStructureRepository.save(c);
                             });
 
@@ -391,8 +377,6 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
                                     lesson.setType(DataStructureType.LESSON.name());
                                     lesson.setParent(chapter);
                                     lesson.setCreatedBy(masterUser);
-                                    lesson.setCreatedAt(Instant.now());
-                                    lesson.setUpdatedAt(Instant.now());
                                     return dataStructureRepository.save(lesson);
                                 });
                     });
