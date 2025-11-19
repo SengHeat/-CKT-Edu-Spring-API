@@ -1,7 +1,9 @@
 package com.ckt.api.user.controller;
 
+import com.ckt.api.base.ApiResponse;
 import com.ckt.api.base.PaginatedResponse;
 import com.ckt.api.user.model.entity.User;
+import com.ckt.api.user.service.AuthService;
 import com.ckt.api.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService users;
+    private final AuthService authService;
 
-    public UserController(UserService users) {
+    public UserController(UserService users, AuthService authService) {
         this.users = users;
+        this.authService = authService;
     }
 
     @GetMapping("/search")
@@ -36,10 +40,20 @@ public class UserController {
         return users.list(page, size);
     }
 
+    @GetMapping("/admin/profile")
+    public ResponseEntity<ApiResponse<?>> adminProfile() {
+        return ResponseEntity.ok(ApiResponse.success(authService.getAdminProfile()));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<?>> profile(@RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(ApiResponse.success(authService.getUserProfile()));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public User show(@PathVariable Long id) {
-        return users.find(id);
+    public ResponseEntity<ApiResponse<?>> show(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(users.find(id)));
     }
 
 }

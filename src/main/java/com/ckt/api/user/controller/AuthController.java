@@ -49,26 +49,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(Map.of("token", token)));
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<?> profile(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Missing or invalid Authorization header");
-        }
-
-        String token = authHeader.substring(7).trim();
-
-        Optional<User> user = auth.getUserFromToken(token);
-
-
-        if (user.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Invalid or expired token");
-        }
-
-        return ResponseEntity.ok(ApiResponse.success(user.get()));
-    }
-
      @PostMapping("/logout")
     public ResponseEntity<ApiResponse<?>> logout(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

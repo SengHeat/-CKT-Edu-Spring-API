@@ -1,7 +1,11 @@
 package com.ckt.api.user.service;
 
 import com.ckt.api.config.AppConfig;
+import com.ckt.api.exception.DuplicateException;
 import com.ckt.api.user.dto.RegisterRequest;
+import com.ckt.api.user.dto.UserAdminProfileDTO;
+import com.ckt.api.user.dto.UserProfileDTO;
+import com.ckt.api.user.mapper.UserMapper;
 import com.ckt.api.user.model.entity.PersonalAccessToken;
 import com.ckt.api.user.model.entity.User;
 import com.ckt.api.user.repository.PATRepository;
@@ -37,6 +41,9 @@ public class AuthService {
     }
 
     public User register(RegisterRequest request) {
+        if(userRepo.existsByUsername(request.getUsername())) {
+            throw new DuplicateException("Email " + request.getUsername() + " is already exists.");
+        }
         User u = new User();
         u.setFirstName(request.getFirstName());
         u.setLastName(request.getLastName());
@@ -119,6 +126,14 @@ public class AuthService {
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    public UserProfileDTO getUserProfile() {
+        return UserMapper.toDTO(user());
+    }
+
+    public UserAdminProfileDTO getAdminProfile() {
+        return UserMapper.toAdminDTO(user());
     }
 
 

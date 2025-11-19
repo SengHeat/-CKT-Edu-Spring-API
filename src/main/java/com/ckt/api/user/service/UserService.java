@@ -1,6 +1,8 @@
 package com.ckt.api.user.service;
 
 import com.ckt.api.base.PaginatedResponse;
+import com.ckt.api.user.dto.UserProfileDTO;
+import com.ckt.api.user.mapper.UserMapper;
 import com.ckt.api.user.model.entity.User;
 import com.ckt.api.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -21,8 +23,8 @@ public class UserService {
         return userRepo.findAll(PageRequest.of(page, size));
     }
 
-    public User find(Long id) {
-        return userRepo.findById(id).orElseThrow();
+    public UserProfileDTO find(Long id) {
+        return UserMapper.toDTO(userRepo.findById(id).orElseThrow());
     }
 
     public User save(User u) { return userRepo.save(u); }

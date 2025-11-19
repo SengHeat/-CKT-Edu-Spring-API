@@ -5,14 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ComponentCollapseDTO {
     private Long id;
     private Long mainComponentId;
-    private String dataType = ComponentTextType.COLLAPSE.name();
+    private String dataType;
     private String data;
 }

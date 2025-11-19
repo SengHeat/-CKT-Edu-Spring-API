@@ -104,7 +104,6 @@ public record ApiResponse<T>(
                 .code(HttpStatus.UNAUTHORIZED.value())
                 .message(message)
                 .timeStamp(LocalDateTime.now())
-                .data(null)
                 .build();
     }
 

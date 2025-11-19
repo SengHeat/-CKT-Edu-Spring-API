@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/data-structures")
+@RequestMapping("/api/public/menus")
 public class DataStructureController {
 
     private final DataStructureService dataStructureService;
@@ -42,19 +42,19 @@ public class DataStructureController {
         return ResponseEntity.status(204).build();
     }
 
-    @PutMapping("/menus/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('UPDATE_DATA_STRUCTURE')")
     public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody StoreDataStructureRequest request) {
         dataStructureService.update(id, request);
         return ResponseEntity.status(204).build();
     }
 
-    @GetMapping("/menus/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<SubMenuDTO>> getSubMenu(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(dataStructureService.getMenuWithSubMenuById(id)));
     }
 
-    @GetMapping("/menus/details/{id}")
+    @GetMapping("/details/{id}")
     public ResponseEntity<ApiResponse<DataStructureDetailDTO>> show(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(dataStructureService.getDetail(id)));
     }

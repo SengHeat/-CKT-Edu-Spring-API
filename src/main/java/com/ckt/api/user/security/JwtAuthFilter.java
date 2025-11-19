@@ -1,5 +1,6 @@
 package com.ckt.api.user.security;
 
+import com.ckt.api.base.ApiResponse;
 import com.ckt.api.user.model.entity.PersonalAccessToken;
 import com.ckt.api.user.model.entity.User;
 import com.ckt.api.user.repository.PATRepository;
@@ -7,6 +8,8 @@ import com.ckt.api.user.repository.UserRepository;
 import com.ckt.api.enums.SystemPermission;
 import com.ckt.api.enums.SystemRole;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,11 +37,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepo;
     private final PATRepository personalAccessTokenRepository;
+    private final ObjectMapper objectMapper;
 
-    public JwtAuthFilter(JwtUtil jwtUtil, UserRepository userRepo, PATRepository patOpt, PATRepository personalAccessTokenRepository) {
+    public JwtAuthFilter(JwtUtil jwtUtil,
+                         UserRepository userRepo,
+                         PATRepository personalAccessTokenRepository,
+                         ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.userRepo = userRepo;
         this.personalAccessTokenRepository = personalAccessTokenRepository;
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Skip filter for public endpoints
+        return path.startsWith("/api/auth/") || path.startsWith("/api/public/");
     }
 
     @Override
@@ -64,14 +79,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 } else if (token.contains("|")) {
+                    // ---- PERSONAL ACCESS TOKEN CASE ----
                     String[] parts = token.split("\\|");
-                    if (parts.length != 2) return;
+                    if (parts.length != 2) {
+                        sendUnauthorizedResponse(response, "Invalid token format");
+                        return;
+                    }
 
                     long id;
                     try {
                         id = Long.parseLong(parts[0]);
                     } catch (NumberFormatException e) {
-                        return; // invalid token id
+                        sendUnauthorizedResponse(response, "Invalid token ID");
+                        return;
                     }
 
                     String plainToken = parts[1];
@@ -82,46 +102,57 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             .filter(t -> t.getTokenHash().equals(hash))
                             .filter(t -> t.getExpiresAt() == null || t.getExpiresAt().isAfter(Instant.now()));
 
-                    patOpt.ifPresent(pat -> {
-                        User u = pat.getUser();
+                    if (patOpt.isEmpty()) {
+                        sendUnauthorizedResponse(response, "Personal Access Token not found or expired");
+                        return;
+                    }
 
-                        // Build authorities for Spring Security
-                        Set<SimpleGrantedAuthority> authorities;
+                    PersonalAccessToken pat = patOpt.get();
+                    User u = pat.getUser();
 
-                        // If MASTER role, grant all permissions
-                        boolean isMaster = u.getRoles().stream()
-                                .anyMatch(r -> r.getName().equals(SystemRole.MASTER.name()));
+                    // Build authorities for Spring Security
+                    Set<SimpleGrantedAuthority> authorities;
 
+                    // If MASTER role, grant all permissions
+                    boolean isMaster = u.getRoles().stream()
+                            .anyMatch(r -> r.getName().equals(SystemRole.MASTER.name()));
 
-                        if (isMaster) {
-                            authorities = Arrays.stream(SystemPermission.values())
-                                    .map(sp -> new SimpleGrantedAuthority(sp.name()))
-                                    .collect(Collectors.toSet());
-                        } else {
-                            authorities = u.getAllAuthorities().stream()
-                                    .map(SimpleGrantedAuthority::new)
-                                    .collect(Collectors.toSet());
-                        }
+                    if (isMaster) {
+                        authorities = Arrays.stream(SystemPermission.values())
+                                .map(sp -> new SimpleGrantedAuthority(sp.name()))
+                                .collect(Collectors.toSet());
+                    } else {
+                        authorities = u.getAllAuthorities().stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .collect(Collectors.toSet());
+                    }
 
-                        // Create authentication token
-                        UsernamePasswordAuthenticationToken auth =
-                                new UsernamePasswordAuthenticationToken(u, null, authorities);
+                    // Create authentication token
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(u, null, authorities);
 
-                        // Set the authentication in the SecurityContext
-                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    // Set the authentication in the SecurityContext
+                    SecurityContextHolder.getContext().setAuthentication(auth);
 
-                        // Update lastUsed timestamp
-                        pat.setLastUsed(Instant.now());
-                        personalAccessTokenRepository.save(pat);
-                    });
+                    // Update lastUsed timestamp
+                    pat.setLastUsed(Instant.now());
+                    personalAccessTokenRepository.save(pat);
                 }
             } catch (Exception e) {
-                // fallback: no auth
                 SecurityContextHolder.clearContext();
+                sendUnauthorizedResponse(response, "Authentication failed: " + e.getMessage());
+                return;
             }
         }
 
         filterChain.doFilter(request, response);
     }
 
+    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+
+        ApiResponse<Void> apiResponse = ApiResponse.unauthorized(message);
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+    }
 }

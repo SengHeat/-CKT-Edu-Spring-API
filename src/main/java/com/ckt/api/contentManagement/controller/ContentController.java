@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/contents")
+@RequestMapping("/api/public/contents")
 public class ContentController {
 
     private final ContentService contentService;
