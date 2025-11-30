@@ -28,8 +28,6 @@ public class DataStructure extends BaseEntity {
     @JsonManagedReference
     private List<DataStructure> children;
 
-    @OneToOne(mappedBy = "dataStructure")
-    private Content content;
-
-
+    @OneToMany(mappedBy = "dataStructure", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Content> contents;
 }

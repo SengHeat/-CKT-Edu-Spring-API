@@ -3,6 +3,7 @@ package com.ckt.api.contentManagement.mapper;
 import com.ckt.api.contentManagement.model.dto.*;
 import com.ckt.api.contentManagement.model.entity.DataStructure;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,7 +101,11 @@ public class DataStructureMapper {
                 .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
                 .parent(toWithParentDto(entity.getParent() != null ? entity.getParent() : null))
                 .children(entity.getChildren() != null ? toWithChildrenDtoList(entity.getChildren()) : null)
-                .content(entity.getContent() != null ? ContentMapper.toDTO(entity.getContent()) : null)
+                .contents(entity.getContents() != null ?
+                        entity.getContents().stream()
+                                .map(ContentMapper::toDTO)
+                                .collect(Collectors.toList())
+                        : Collections.emptyList())
                 .build();
     }
 

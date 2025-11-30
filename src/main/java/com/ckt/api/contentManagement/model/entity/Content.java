@@ -17,8 +17,8 @@ public class Content extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "data_structure_id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "data_structure_id") // This creates the Foreign Key in the Content table
     private DataStructure dataStructure;
 
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
