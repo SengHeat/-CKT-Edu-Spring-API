@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -24,10 +25,10 @@ public class DataStructure extends BaseEntity {
     @JsonBackReference
     private DataStructure parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<DataStructure> children;
+    private List<DataStructure> children = new ArrayList<>();
 
-    @OneToMany(mappedBy = "dataStructure", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Content> contents;
+    @OneToMany(mappedBy = "dataStructure", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Content> contents = new ArrayList<>();
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -17,10 +18,10 @@ public class Content extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "data_structure_id") // This creates the Foreign Key in the Content table
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "data_structure_id")
     private DataStructure dataStructure;
 
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Component> components;
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Component> components = new ArrayList<>();
 }
