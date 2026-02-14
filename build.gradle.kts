@@ -7,7 +7,7 @@ plugins {
     `java-library`
     `maven-publish`
 
-    id("org.springframework.boot") version "3.2.0"
+    id("org.springframework.boot") version "3.5.5"
 }
 
 repositories {
@@ -40,13 +40,16 @@ dependencies {
     }
     testImplementation(libs.org.springframework.security.spring.security.test)
 
-    // Explicit JUnit 5 dependencies with aligned versions
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
-    testImplementation("org.junit.platform:junit-platform-launcher:1.9.3")
+    // JUnit Platform Launcher - aligned with Spring Boot
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
 
     // Lombok for tests
     testCompileOnly(libs.org.projectlombok.lombok)
     testAnnotationProcessor(libs.org.projectlombok.lombok)
+
+    // Karate Testing
+    testImplementation(libs.karate.core)
+    testImplementation(libs.karate.junit5)
 }
 
 group = "com.api"
@@ -56,6 +59,20 @@ description = "EducationApi"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Add karate features to test classpath
+sourceSets {
+    test {
+        resources.srcDirs("karate")
+    }
+}
+
+val test by tasks.getting(Test::class) {
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
 }
 
 publishing {
@@ -75,5 +92,5 @@ tasks.withType<Javadoc>() {
 tasks.withType<Test> {
     useJUnitPlatform()
     failOnNoDiscoveredTests = false
-    enabled = false  // TEMPORARY: Disable tests to check if build works
+    // enabled = false  // Enable tests for Karate
 }

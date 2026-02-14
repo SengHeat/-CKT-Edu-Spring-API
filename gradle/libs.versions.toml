@@ -11,6 +11,8 @@ org-springframework-boot-spring-boot-starter-test = "3.5.5"
 org-springframework-boot-spring-boot-starter-validation = "3.5.5"
 org-springframework-boot-spring-boot-starter-web = "3.5.5"
 org-springframework-security-spring-security-test = "6.5.3"
+karate-core = "1.4.1"
+karate-junit5 = "1.4.1"
 
 [libraries]
 com-auth0-java-jwt = { module = "com.auth0:java-jwt", version.ref = "com-auth0-java-jwt" }
@@ -22,3 +24,5 @@ org-springframework-boot-spring-boot-starter-test = { module = "org.springframew
 org-springframework-boot-spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "org-springframework-boot-spring-boot-starter-validation" }
 org-springframework-boot-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "org-springframework-boot-spring-boot-starter-web" }
 org-springframework-security-spring-security-test = { module = "org.springframework.security:spring-security-test", version.ref = "org-springframework-security-spring-security-test" }
+karate-core = { module = "com.intuit.karate:karate-core", version.ref = "karate-core" }
+karate-junit5 = { module = "com.intuit.karate:karate-junit5", version.ref = "karate-junit5" }
