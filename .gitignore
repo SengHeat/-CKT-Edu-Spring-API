@@ -36,3 +36,4 @@ bin
 .gradle
 # Local config with secrets
 **/application-local.yml
+**/application-local.properties
