@@ -3,16 +3,13 @@ FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /app
 
-# Copy gradle wrapper and config
-COPY gradlew .
+# Copy gradle wrapper and config files (all variants)
+COPY gradlew* ./
 COPY gradle gradle
-COPY build.gradle settings.gradle ./
+COPY build.gradle* settings.gradle* ./
 
 # Make gradlew executable
 RUN chmod +x gradlew
-
-# Download dependencies (cached layer)
-RUN ./gradlew dependencies --no-daemon || true
 
 # Copy source code
 COPY src src
