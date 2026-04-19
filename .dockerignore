@@ -1,0 +1,11 @@
+.idea
+.git
+.gitignore
+*.md
+build/
+out/
+target/
+node_modules/
+**/application-local.yml
+**/*.log
+.DS_Store
