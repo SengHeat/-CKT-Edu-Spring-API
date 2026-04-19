@@ -34,3 +34,5 @@ build/
 
 bin
 .gradle
+# Local config with secrets
+**/application-local.yml

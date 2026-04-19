@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://dpg-d7i9l50sfn5c738gl5vg-a.singapore-postgres.render.com:5432/ctk_education?sslmode=require
+    username: ctk_education_user
+    password: A2L31NAiJ1n93Ldn0j1aZYxZtBBDOfFZ
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -19,9 +19,9 @@ spring:
 
 server:
   address: 0.0.0.0
-  port: ${PORT:8080}
+  port: 8080
 
 
 datasource:
   seed:
-    enabled: false
+    enabled: true
