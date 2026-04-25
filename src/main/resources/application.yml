@@ -5,22 +5,32 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 600000
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate   # IMPORTANT (change from update)
+    open-in-view: false
     show-sql: false
+
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-
-  flyway:
-    enabled: false
+        format_sql: false
+        jdbc:
+          batch_size: 25
+        order_inserts: true
+        order_updates: true
+        default_schema: public
 
 server:
   address: 0.0.0.0
   port: ${PORT:8080}
-
 
 datasource:
   seed:
