@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for api-spring-learning on 2026-04-25T16:22:12Z
+# fly.toml app configuration file generated for api-spring-learning-late-meadow-9931 on 2026-04-26T00:50:05+07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'api-spring-learning'
+app = 'api-spring-learning-late-meadow-9931'
 primary_region = 'sin'
 
 [build]
@@ -17,7 +17,6 @@ primary_region = 'sin'
   processes = ['app']
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
-  memory_mb = 1024
+  memory = '2gb'
+  cpus = 2
+  memory_mb = 2048

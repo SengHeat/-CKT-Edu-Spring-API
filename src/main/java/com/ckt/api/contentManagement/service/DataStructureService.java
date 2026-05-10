@@ -7,7 +7,7 @@ import com.ckt.api.contentManagement.model.entity.DataStructure;
 import com.ckt.api.exception.DuplicateException;
 import com.ckt.api.exception.NotFoundException;
 import com.ckt.api.contentManagement.repository.DataStructureRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,6 +62,7 @@ public class DataStructureService {
         }
     }
 
+    @Transactional(readOnly = true)
     public SubMenuDTO getMenuWithSubMenuById(Long id) {
         DataStructure dataStructure = dataStructureRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Data structure not found"));
