@@ -23,18 +23,19 @@ public interface DataStructureRepository extends JpaRepository<DataStructure, Lo
     @Query("SELECT ds FROM DataStructure ds WHERE ds.type = 'GRADE'")
     List<DataStructure> findAllGrades();
 
-    @Query("SELECT d FROM DataStructure d " +
-            "LEFT JOIN FETCH d.children " +
-            "LEFT JOIN FETCH d.parent " +
-            "WHERE d.id = :id")
-    Optional<DataStructure> findByIdWithChildrenAndParent(@Param("id") Long id);
-
-    @Query("SELECT d FROM DataStructure d " +
+    @Query("SELECT DISTINCT d FROM DataStructure d " +   // ← add DISTINCT
             "LEFT JOIN FETCH d.parent p " +
-            "LEFT JOIN FETCH p.parent " +       // parent's parent
+            "LEFT JOIN FETCH p.parent " +
             "LEFT JOIN FETCH d.children " +
-            "LEFT JOIN FETCH d.contents " +     // ← contents also lazy!
+            "LEFT JOIN FETCH d.contents " +
             "WHERE d.id = :id")
     Optional<DataStructure> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT d FROM DataStructure d " +   // ← add DISTINCT
+            "LEFT JOIN FETCH d.parent p " +
+            "LEFT JOIN FETCH p.parent " +
+            "LEFT JOIN FETCH d.children " +
+            "WHERE d.id = :id")
+    Optional<DataStructure> findByIdWithChildrenAndParent(@Param("id") Long id);
 
 }

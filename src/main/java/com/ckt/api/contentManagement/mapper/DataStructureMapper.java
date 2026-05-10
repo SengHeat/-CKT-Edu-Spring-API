@@ -3,6 +3,7 @@ package com.ckt.api.contentManagement.mapper;
 import com.ckt.api.contentManagement.model.dto.*;
 import com.ckt.api.contentManagement.model.entity.DataStructure;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,9 +84,6 @@ public class DataStructureMapper {
                 .collect(Collectors.toList());
     }
 
-    // ─────────────────────────────────────────────
-    // Detail DTO (used in /details/{id})
-    // ─────────────────────────────────────────────
     public static DataStructureDetailDTO toDetailDto(DataStructure entity) {
         if (entity == null) return null;
 
@@ -97,7 +95,7 @@ public class DataStructureMapper {
                 .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
                 .parent(toWithParentDto(entity.getParent()))
                 .children(entity.getChildren() != null
-                        ? toWithChildrenDtoList(entity.getChildren())
+                        ? toWithChildrenDtoList(new ArrayList<>(entity.getChildren()))  // ← wrap in ArrayList
                         : Collections.emptyList())
                 .contents(entity.getContents() != null
                         ? entity.getContents().stream()
@@ -107,9 +105,6 @@ public class DataStructureMapper {
                 .build();
     }
 
-    // ─────────────────────────────────────────────
-    // SubMenu DTO (used in /{id})
-    // ─────────────────────────────────────────────
     public static SubMenuDTO toSubMenuDto(DataStructure entity) {
         if (entity == null) return null;
 
@@ -121,7 +116,7 @@ public class DataStructureMapper {
                 .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
                 .parent(toWithParentDto(entity.getParent()))
                 .children(entity.getChildren() != null
-                        ? toWithChildrenDtoList(entity.getChildren())
+                        ? toWithChildrenDtoList(new ArrayList<>(entity.getChildren()))  // ← wrap in ArrayList
                         : Collections.emptyList())
                 .build();
     }

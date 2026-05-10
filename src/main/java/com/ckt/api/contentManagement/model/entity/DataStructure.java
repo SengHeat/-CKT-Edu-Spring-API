@@ -9,7 +9,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -25,9 +27,9 @@ public class DataStructure extends BaseEntity {
     @JsonBackReference
     private DataStructure parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    private List<DataStructure> children = new ArrayList<>();
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<DataStructure> children = new HashSet<>();  // ← was List
 
-    @OneToMany(mappedBy = "dataStructure", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Content> contents = new ArrayList<>();
+    @OneToMany(mappedBy = "dataStructure", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Content> contents = new HashSet<>();        // ← was List
 }
