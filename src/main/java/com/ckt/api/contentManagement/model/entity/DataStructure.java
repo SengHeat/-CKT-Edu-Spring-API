@@ -25,8 +25,7 @@ public class DataStructure extends BaseEntity {
     @JsonBackReference
     private DataStructure parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<DataStructure> children = new ArrayList<>();
 
     @OneToMany(mappedBy = "dataStructure", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

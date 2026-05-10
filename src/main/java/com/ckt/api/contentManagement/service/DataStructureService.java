@@ -64,7 +64,8 @@ public class DataStructureService {
 
     @Transactional(readOnly = true)
     public SubMenuDTO getMenuWithSubMenuById(Long id) {
-        DataStructure dataStructure = dataStructureRepository.findById(id)
+        DataStructure dataStructure = dataStructureRepository
+                .findByIdWithChildrenAndParent(id)
                 .orElseThrow(() -> new NotFoundException("Data structure not found"));
 
         return DataStructureMapper.toSubMenuDto(dataStructure);
@@ -95,6 +96,7 @@ public class DataStructureService {
         return DataStructureMapper.toGradeDtoList(dataStructures);
     }
 
+    @Transactional
     public void delete(Long id) {
         DataStructure dataStructure = findEntityById(id);
         if (dataStructure != null) {
