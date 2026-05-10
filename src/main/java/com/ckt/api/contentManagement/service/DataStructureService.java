@@ -67,12 +67,13 @@ public class DataStructureService {
         DataStructure dataStructure = dataStructureRepository
                 .findByIdWithChildrenAndParent(id)
                 .orElseThrow(() -> new NotFoundException("Data structure not found"));
-
         return DataStructureMapper.toSubMenuDto(dataStructure);
     }
 
+    @Transactional(readOnly = true)  // ← was missing
     public DataStructureDetailDTO getDetail(Long id) {
-        DataStructure dataStructure = dataStructureRepository.findById(id)
+        DataStructure dataStructure = dataStructureRepository
+                .findByIdWithDetails(id)
                 .orElseThrow(() -> new NotFoundException("Data structure not found"));
 
         return DataStructureMapper.toDetailDto(dataStructure);

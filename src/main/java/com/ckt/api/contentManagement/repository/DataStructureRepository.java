@@ -29,5 +29,12 @@ public interface DataStructureRepository extends JpaRepository<DataStructure, Lo
             "WHERE d.id = :id")
     Optional<DataStructure> findByIdWithChildrenAndParent(@Param("id") Long id);
 
+    @Query("SELECT d FROM DataStructure d " +
+            "LEFT JOIN FETCH d.parent p " +
+            "LEFT JOIN FETCH p.parent " +       // parent's parent
+            "LEFT JOIN FETCH d.children " +
+            "LEFT JOIN FETCH d.contents " +     // ← contents also lazy!
+            "WHERE d.id = :id")
+    Optional<DataStructure> findByIdWithDetails(@Param("id") Long id);
 
 }
