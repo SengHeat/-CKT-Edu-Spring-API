@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate   # IMPORTANT (change from update)
+      ddl-auto: update   # IMPORTANT (change from update)
     open-in-view: false
     show-sql: false
 
