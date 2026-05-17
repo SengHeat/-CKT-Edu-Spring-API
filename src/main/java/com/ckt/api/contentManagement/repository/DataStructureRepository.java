@@ -16,25 +16,30 @@ public interface DataStructureRepository extends JpaRepository<DataStructure, Lo
     // Check if a name exists under a specific parent
     boolean existsByNameAndParent(String name, DataStructure parent);
 
-    Optional<DataStructure> findByNameAndParentIsNull(String name);
-    Optional<DataStructure> findByNameAndParent(String name, DataStructure parent);
+    Optional<DataStructure> findFirstByNameAndParentIsNull(String name);
+    Optional<DataStructure> findFirstByNameAndParent(String name, DataStructure parent);
     List<DataStructure> findByType(String type);
 
     @Query("SELECT ds FROM DataStructure ds WHERE ds.type = 'GRADE'")
     List<DataStructure> findAllGrades();
 
-    @Query("SELECT DISTINCT d FROM DataStructure d " +   // ← add DISTINCT
+    @Query("SELECT DISTINCT d FROM DataStructure d " +
             "LEFT JOIN FETCH d.parent p " +
-            "LEFT JOIN FETCH p.parent " +
+            "LEFT JOIN FETCH p.parent pp " +
+            "LEFT JOIN FETCH pp.parent " +
             "LEFT JOIN FETCH d.children " +
-            "LEFT JOIN FETCH d.contents " +
+            "LEFT JOIN FETCH d.contents c " +
+            "LEFT JOIN FETCH c.components comp " +
+            "LEFT JOIN FETCH comp.componentText " +
+            "LEFT JOIN FETCH comp.componentCollapse " +
             "WHERE d.id = :id")
     Optional<DataStructure> findByIdWithDetails(@Param("id") Long id);
 
-    @Query("SELECT DISTINCT d FROM DataStructure d " +   // ← add DISTINCT
+    @Query("SELECT DISTINCT d FROM DataStructure d " +
             "LEFT JOIN FETCH d.parent p " +
             "LEFT JOIN FETCH p.parent " +
-            "LEFT JOIN FETCH d.children " +
+            "LEFT JOIN FETCH d.children c " +
+            "LEFT JOIN FETCH c.children " +
             "WHERE d.id = :id")
     Optional<DataStructure> findByIdWithChildrenAndParent(@Param("id") Long id);
 

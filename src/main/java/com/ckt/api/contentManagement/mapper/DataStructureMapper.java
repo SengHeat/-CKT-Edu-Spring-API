@@ -47,9 +47,7 @@ public class DataStructureMapper {
                 .id(entity.getId())
                 .name(entity.getName())
                 .type(entity.getType())
-                // ✅ FIXED — was calling toWithParentDto(entity.getParent())
-                // which triggered another lazy proxy load with no session
-                .parent(null)
+                .parent(toWithParentDto(entity.getParent()))
                 .build();
     }
 
@@ -69,11 +67,12 @@ public class DataStructureMapper {
         return DataStructureChildrenDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
+                .type(entity.getType())
                 .description(entity.getDescription())
                 .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
-                // ✅ FIXED — was calling toWithChildrenDtoList(entity.getChildren())
-                // which triggered another lazy collection load with no session
-                .children(Collections.emptyList())
+                .children(entity.getChildren() != null
+                        ? toWithChildrenDtoList(new ArrayList<>(entity.getChildren()))
+                        : Collections.emptyList())
                 .build();
     }
 
@@ -97,11 +96,11 @@ public class DataStructureMapper {
                 .children(entity.getChildren() != null
                         ? toWithChildrenDtoList(new ArrayList<>(entity.getChildren()))  // ← wrap in ArrayList
                         : Collections.emptyList())
-                .contents(entity.getContents() != null
+                .content(entity.getContents() != null
                         ? entity.getContents().stream()
                         .map(ContentMapper::toDTO)
-                        .collect(Collectors.toList())
-                        : Collections.emptyList())
+                        .findFirst().orElse(null)
+                        : null)
                 .build();
     }
 

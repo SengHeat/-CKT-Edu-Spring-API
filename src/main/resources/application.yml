@@ -33,4 +33,4 @@ server:
 
 datasource:
   seed:
-    enabled: false
+    enabled: true

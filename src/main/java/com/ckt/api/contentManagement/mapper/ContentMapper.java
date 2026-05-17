@@ -10,6 +10,7 @@ public class ContentMapper {
         }
         return ContentDTO.builder()
                 .id(content.getId())
+                .dataStructureId(content.getDataStructure() != null ? content.getDataStructure().getId() : null)
                 .title(content.getTitle())
                 .description(content.getDescription())
                 .components(ComponentMapper.toDtoList(content.getComponents()))

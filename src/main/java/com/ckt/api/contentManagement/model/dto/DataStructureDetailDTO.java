@@ -20,5 +20,5 @@ public class DataStructureDetailDTO {
     private Long parentId;
     private DataStructureParentDTO parent;
     private List<DataStructureChildrenDTO> children;
-    private List<ContentDTO> contents;
+    private ContentDTO content;
 }
